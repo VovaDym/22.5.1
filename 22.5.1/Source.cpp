@@ -1,6 +1,8 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <vector>
+
 
 bool correctN(std::string number)
 {
@@ -23,7 +25,7 @@ bool correctN(std::string number)
 int main()
 {
 	std::map <std::string, std::string> phoneName;
-	std::multimap <std::string, std::string> namePhone;
+	std::map <std::string, std::vector<std::string>> namePhone;
     std::string name;
 	std::string number;
 
@@ -56,8 +58,24 @@ int main()
                 std::cin >> number;
 			} while (!correctN(number));
 		    
-		    phoneName.emplace(number, name);
-		    namePhone.emplace(name, number);
+			std::vector<std::string> tmp;
+			tmp.push_back(number);
+
+			phoneName.insert(std::pair<std::string, std::string>(number, name));
+
+			std::map<std::string, std::vector<std::string>>::iterator itnp;
+
+			itnp = namePhone.find(name);
+			if (itnp == namePhone.end())
+			{
+				namePhone.insert(std::pair<std::string, std::vector<std::string>>(name,
+					tmp));
+			}
+			else
+			{
+				itnp->second.push_back(number);
+				std::cout << "The phone number to the subscriber " << name << " has been added" << std::endl;
+			}
 		}
 		else if (request == 2)
 		{	
@@ -86,11 +104,11 @@ int main()
 			auto personName = namePhone.find(name);
             if (personName != namePhone.end())
 			{
-                auto personName = namePhone.equal_range(name);
-				for (auto it = personName.first; it != personName.second; it++)
-			    {
-				     std::cout << it->second << std::endl;
-			    }
+				int countNumbers = personName->second.size();
+				for (int i = 0; i < countNumbers; ++i)
+				{
+					std::cout << personName->second[i] << std::endl;
+				}
 			}
 			else
 			{
