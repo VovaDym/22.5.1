@@ -3,62 +3,65 @@
 #include <string>
 #include <vector>
 
-
-bool correctN(std::string number)
+int requestDeterminant(std::string enterRequest)
 {
-	if (number.length() != 8 ||
-		number[2] != '-' || number[5] != '-')
-		return false;
-
-	int block1 = std::stoi(number.substr(0, 2));
-	int block2 = std::stoi(number.substr(3, 2));
-	int block3 = std::stoi(number.substr(6, 2));
-
-	if (block1 >= 10 && block1 <= 99 && block2 >= 10 && block2 <= 99 && block3 >= 10 && block3 <= 99)
+	int request;
+	if (enterRequest.length() == 8 && enterRequest[2] == '-' && enterRequest[5] == '-') 
 	{
-        return true;
+		request = 2;
 	}
-		
-	return false;
+	else if (enterRequest.length() > 8 && enterRequest[9] >= 'A' && enterRequest[9] <= 'Z')
+	{
+		request = 1;
+	}
+	else if (enterRequest[0] >= 'A' && enterRequest[0] <= 'Z' && enterRequest[1] >= 'a' && enterRequest[1] <= 'z')
+	{
+		request = 3;
+	}
+	else
+	{
+		std::cout << "Error!Incorrect input";
+		request = -1;
+	}
+	return request;
 }
 
 int main()
 {
 	std::map <std::string, std::string> phoneName;
 	std::map <std::string, std::vector<std::string>> namePhone;
+	std::vector<std::string> tmp;
     std::string name;
 	std::string number;
-
-	int request = 1;
+    int request = 0;
+	std::string enterRequest;
 	
 	while (true)
 	{
-		int request = -1;
-		std::cout << "Enter 0 to terminate the program" << std::endl;
-		std::cout << "Enter 1 to add a subscriber" << std::endl;
-		std::cout << "Enter 2 to search for a subscriber by number" << std::endl;
-		std::cout << "Enter 3 to find out the subscriber's number by name" << std::endl;
-		
-		while (request < 0 || request > 3)
+		do
 		{
-			std::cin >> request;
-			if (request == 0) return 0;
-		}
+			std::getline(std::cin,enterRequest);
+			request = requestDeterminant(enterRequest);
+		} 
+		while (request < 1 || request > 3);
+		
 
 		std::cout << std::endl;
 
 		if (request == 1)
 		{
-            system("cls");
-		    std::cout << "Enter name person" << std::endl;
-		    std::cin >> name;
-			do
+			for (int i = 0; i < enterRequest.length(); ++i)
 			{
-                std::cout << "Enter number telephon" << std::endl;
-                std::cin >> number;
-			} while (!correctN(number));
-		    
-			std::vector<std::string> tmp;
+				if (i < 8)
+				{
+					number += enterRequest[i];
+				}
+				else if (i >= 9)
+				{
+					name += enterRequest[i];
+				}
+			}
+		    			
 			tmp.push_back(number);
 
 			phoneName.insert(std::pair<std::string, std::string>(number, name));
@@ -76,13 +79,13 @@ int main()
 				itnp->second.push_back(number);
 				std::cout << "The phone number to the subscriber " << name << " has been added" << std::endl;
 			}
+			name.clear();
+			number.clear();
 		}
 		else if (request == 2)
 		{	
             system("cls");
-            std::cout << "Find a subscriber by number: " << std::endl;
-			std::cout << "Enter a number: " << std::endl;
-	        std::cin >> number;
+			number = enterRequest;
 			
 	        auto it = phoneName.find(number);
 			if (it != phoneName.end())
@@ -96,10 +99,7 @@ int main()
 		}
 		else if (request == 3)
 		{
-			system("cls");
-			std::cout << "Search for a phone number by subscriber name: " << std::endl;
-			std::cout << "Enter a name: " << std::endl;
-			std::cin >> name;
+			name = enterRequest;
 
 			auto personName = namePhone.find(name);
             if (personName != namePhone.end())
@@ -107,7 +107,7 @@ int main()
 				int countNumbers = personName->second.size();
 				for (int i = 0; i < countNumbers; ++i)
 				{
-					std::cout << personName->second[i] << std::endl;
+					std::cout << personName->second[i] << " ";
 				}
 			}
 			else
